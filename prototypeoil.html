@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Oil Shock to Grid Shock · Oil Shock Hack 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Thai:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0e0c;--ink2:#444240;--ink3:#888580;--ink4:#bbb8b2;
+  --bg:#f8f7f3;--bg2:#ffffff;--bg3:#f2f0ea;--bg4:#e8e5dc;
+  --border:#dddad2;--border2:#ccc9c0;
+  --green:#15803d;--green-bg:#f0fdf4;--green-bd:#86efac;
+  --amber:#92400e;--amber-bg:#fffbeb;--amber-bd:#fcd34d;
+  --red:#b91c1c;--red-bg:#fef2f2;--red-bd:#fca5a5;
+  --blue:#1e40af;--blue-bg:#eff6ff;--blue-bd:#93c5fd;
+  --accent:#c0392b;
+  --radius:10px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans Thai',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+
+/* ─── HERO ─── */
+.hero{background:var(--ink);color:#fff;padding:2rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;border:1px solid rgba(255,255,255,.06);border-radius:50%}
+.hero::after{content:'';position:absolute;right:-10px;top:-10px;width:160px;height:160px;border:1px solid rgba(255,255,255,.04);border-radius:50%}
+.hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;position:relative;z-index:1}
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:#666;text-transform:uppercase;margin-bottom:.5rem}
+.hero-title{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;line-height:1.15;margin-bottom:.4rem}
+.hero-title span{color:#fbbf24}
+.hero-sub{font-size:13px;color:#999;font-weight:300;line-height:1.6}
+.hero-stats{display:flex;gap:1.5rem;flex-shrink:0;align-items:flex-start;padding-top:.25rem}
+.hstat{text-align:right}
+.hstat-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;color:#fbbf24;line-height:1}
+.hstat-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem}
+
+/* ─── NAV ─── */
+.nav-wrap{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav{max-width:1100px;margin:0 auto;display:flex;gap:0;padding:0 2rem}
+.nav-btn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:.75rem 1.25rem;border:none;background:none;cursor:pointer;color:var(--ink3);border-bottom:2px solid transparent;margin-bottom:-1px;letter-spacing:.06em;text-transform:uppercase;transition:color .2s,border-color .2s;white-space:nowrap}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-btn:hover:not(.active){color:var(--ink2)}
+.nav-num{font-size:9px;opacity:.5;margin-right:4px}
+
+/* ─── MAIN ─── */
+.main{max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem}
+.panel{display:none}
+.panel.active{display:block}
+
+/* ─── SECTION HEADERS ─── */
+.sec-head{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.sec-badge{font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--ink);color:#fff;padding:3px 8px;border-radius:3px;letter-spacing:.08em}
+.sec-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--ink)}
+.sec-line{flex:1;height:1px;background:var(--border)}
+.sec-sub{font-size:13px;color:var(--ink3);margin-bottom:1.5rem;margin-top:-.75rem}
+
+/* ─── CARDS ─── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.card-sm{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem}
+.card-dark{background:var(--ink);border-radius:var(--radius);padding:1.5rem;color:#fff}
+
+/* ─── GRID ─── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+
+/* ─── SIMULATOR ─── */
+.sim-layout{display:grid;grid-template-columns:420px 1fr;gap:1.25rem}
+.input-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+
+.scen-label{font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
+.scen-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.scen-btn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 14px;border:1px solid var(--border2);background:var(--bg3);border-radius:5px;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.scen-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.scen-btn:hover:not(.active){background:var(--bg4);border-color:var(--border2)}
+
+.sl-group{margin-bottom:1.25rem}
+.sl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem}
+.sl-name{font-size:14px;font-weight:500;color:var(--ink)}
+.sl-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500}
+input[type=range]{width:100%;height:6px;accent-color:var(--ink);cursor:pointer;border-radius:3px;margin:0}
+.sl-hints{display:flex;justify-content:space-between;font-size:10px;color:var(--ink4);margin-top:.25rem;font-family:'JetBrains Mono',monospace}
+
+.presets-wrap{border-top:1px solid var(--border);padding-top:1.1rem;margin-top:.5rem}
+.presets-label{font-size:11px;color:var(--ink3);margin-bottom:.5rem;font-weight:500}
+.presets-btns{display:flex;gap:.4rem;flex-wrap:wrap}
+.preset-btn{font-size:11px;padding:4px 10px;border:1px solid var(--border);background:var(--bg3);border-radius:4px;cursor:pointer;color:var(--ink2);transition:background .15s}
+.preset-btn:hover{background:var(--bg4)}
+
+/* ─── RIS OUTPUT ─── */
+.output-col{display:flex;flex-direction:column;gap:1rem}
+
+.ris-card{border-radius:var(--radius);padding:1.5rem;border:2px solid var(--border);background:var(--bg2);text-align:center;transition:all .3s}
+.ris-card.stable{border-color:var(--green-bd);background:var(--green-bg)}
+.ris-card.moderate{border-color:var(--amber-bd);background:var(--amber-bg)}
+.ris-card.critical{border-color:var(--red-bd);background:var(--red-bg)}
+.ris-tag{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink3);margin-bottom:.5rem}
+.ris-big{font-family:'JetBrains Mono',monospace;font-size:58px;font-weight:500;line-height:1;transition:color .3s}
+.ris-pct{font-size:26px}
+.ris-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;padding:4px 14px;border-radius:4px;margin-top:.5rem;letter-spacing:.08em}
+.stable .ris-badge{background:#dcfce7;color:var(--green)}
+.moderate .ris-badge{background:#fef3c7;color:var(--amber)}
+.critical .ris-badge{background:#fee2e2;color:var(--red)}
+.ris-prog-wrap{width:100%;margin-top:.75rem}
+.ris-prog-track{height:8px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden}
+.ris-prog-fill{height:100%;border-radius:4px;transition:width .5s ease,background .3s}
+.ris-source{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink4);margin-top:.5rem}
+
+.insight-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem}
+.insight-inner{font-size:13px;color:var(--ink2);line-height:1.7}
+.insight-inner strong{color:var(--ink);font-weight:600}
+
+/* ─── BREAKDOWN ─── */
+.breakdown-row{display:flex;align-items:center;gap:.75rem;margin:0 0 .5rem}
+.breakdown-label{font-size:12px;color:var(--ink3);width:160px;flex-shrink:0}
+.breakdown-bar-wrap{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.breakdown-bar{height:100%;border-radius:3px;transition:width .4s}
+.breakdown-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;width:40px;text-align:right}
+
+/* ─── SCENARIO ─── */
+.comp-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem}
+.comp-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center;transition:all .2s;position:relative}
+.comp-card.highlighted{border-color:var(--red-bd);border-width:2px}
+.comp-card.highlighted::before{content:'WORST CASE';position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:8px;background:var(--red);color:#fff;padding:2px 8px;border-radius:3px;letter-spacing:.1em;white-space:nowrap}
+.comp-card-name{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem}
+.comp-card-ris{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;margin-bottom:.3rem}
+.comp-card-status{font-size:10px;font-weight:600;letter-spacing:.06em;margin-bottom:.6rem}
+.comp-bar{height:5px;border-radius:3px;margin:0 auto}
+
+.gap-block{background:var(--ink);border-radius:var(--radius);padding:1.5rem 2rem;display:flex;align-items:center;gap:2rem;color:#fff}
+.gap-num{font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:500;color:#fbbf24;line-height:1;flex-shrink:0}
+.gap-text{font-size:14px;color:#ccc;line-height:1.8}
+.gap-text strong{color:#fff;font-weight:600}
+
+/* ─── INTERACTION CHART ─── */
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.chart-legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;font-size:12px;color:var(--ink2)}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-line{width:22px;height:3px;border-radius:2px}
+
+/* ─── POLICY TOOL ─── */
+.policy-layout{display:grid;grid-template-columns:400px 1fr;gap:1.25rem}
+.policy-info-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.policy-info-label{font-size:13px;color:var(--ink2)}
+.policy-info-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500}
+
+.delta-block{margin-top:1.1rem;padding:1.1rem;border-radius:8px;background:var(--bg3);border:1px solid var(--border);transition:all .3s}
+.delta-block.active{background:var(--green-bg);border-color:var(--green-bd)}
+.delta-num{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:500;transition:color .3s}
+.delta-num.green{color:var(--green)}
+.delta-label{font-size:12px;color:var(--ink3);font-weight:500;margin-top:.1rem}
+.delta-sub{font-size:12px;color:var(--ink3);margin-top:.3rem;line-height:1.5}
+
+.policy-bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem}
+.policy-bar-label{font-size:12px;color:var(--ink2);width:75px;flex-shrink:0}
+.policy-bar-track{flex:1;height:10px;background:var(--bg4);border-radius:5px;overflow:hidden}
+.policy-bar-fill{height:100%;border-radius:5px;transition:width .5s ease,background .3s}
+.policy-bar-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;width:45px;text-align:right}
+
+/* ─── FOOTER ─── */
+.theme-footer{background:var(--blue-bg);border-top:1px solid var(--blue-bd);padding:1.1rem 2rem;margin-top:2rem}
+.theme-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1.25rem}
+.theme-quote{font-family:'Sora',sans-serif;font-size:14px;font-style:italic;color:var(--blue);font-weight:600;flex:1}
+.theme-tag{font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--blue);color:#fff;padding:4px 10px;border-radius:4px;flex-shrink:0;letter-spacing:.08em}
+.data-note{font-size:11px;color:var(--ink4);margin-top:.35rem;font-family:'JetBrains Mono',monospace}
+
+/* ─── UTILITY ─── */
+.mono{font-family:'JetBrains Mono',monospace}
+.mt1{margin-top:1rem}
+.mt15{margin-top:1.5rem}
+
+@media(max-width:800px){
+  .sim-layout,.policy-layout,.comp-cards,.g2,.g4{grid-template-columns:1fr}
+  .hero-inner{flex-direction:column}
+  .hero-stats{flex-direction:row;flex-wrap:wrap;gap:1rem}
+  .comp-cards{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-tag">Oil Shock Hack 2026 · Track C / Build · Earth Engineering</div>
+      <div class="hero-title">From Oil Shock to <span>Grid Shock</span></div>
+      <div class="hero-sub">
+        System-Dependent Renewable Transition Paradox<br>
+        N=30 countries · 767 observations · 5 models · Panel data 2000–2025
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val">29×</div><div class="hstat-label">Max RIS Gap</div></div>
+      <div class="hstat"><div class="hstat-val">0.794</div><div class="hstat-label">β_SW (FE model)</div></div>
+      <div class="hstat"><div class="hstat-val">−58%</div><div class="hstat-label">Dispatch effect</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- WHY THIS MATTERS -->
+<div style="background:#fefce8;border-bottom:1px solid #fde68a">
+  <div style="max-width:1100px;margin:0 auto;padding:.85rem 2.5rem;display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:#92400e;text-transform:uppercase;letter-spacing:.14em;flex-shrink:0">⚡ Why this matters</div>
+    <div style="display:flex;gap:2rem;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:13px;color:#78350f">
+        <span style="font-family:'JetBrains Mono',monospace;color:#b45309;font-weight:500">→</span>
+        ประเทศสามารถ <strong>fail ได้ แม้ Renewable สูง</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:13px;color:#78350f">
+        <span style="font-family:'JetBrains Mono',monospace;color:#b45309;font-weight:500">→</span>
+        Risk ไม่ได้มาจาก <strong>energy type</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:13px;color:#78350f">
+        <span style="font-family:'JetBrains Mono',monospace;color:#b45309;font-weight:500">→</span>
+        แต่มาจาก <strong>system design</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPanel('sim')"><span class="nav-num">01</span> System Simulator</button>
+    <button class="nav-btn" onclick="showPanel('comp')"><span class="nav-num">02</span> Scenario Comparison</button>
+    <button class="nav-btn" onclick="showPanel('country')"><span class="nav-num">03</span> Country Explorer</button>
+    <button class="nav-btn" onclick="showPanel('inter')"><span class="nav-num">04</span> Interaction Effect</button>
+    <button class="nav-btn" onclick="showPanel('policy')"><span class="nav-num">05</span> Policy Tool</button>
+  </nav>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ──────────── PANEL 01: SIMULATOR ──────────── -->
+  <div class="panel active" id="panel-sim">
+    <div class="sec-head">
+      <span class="sec-badge">01</span>
+      <span class="sec-title">System Simulator</span>
+      <div class="sec-line"></div>
+    </div>
+    <p class="sec-sub">ปรับ slider หรือเลือก preset เพื่อดู Renewable Integration Stress (RIS) แบบ real-time — คำนวณจาก Fixed Effects regression β จริง</p>
+
+    <div class="sim-layout">
+      <!-- INPUT -->
+      <div class="input-panel">
+        <div class="scen-label">Scenario</div>
+        <div class="scen-btns">
+          <button class="scen-btn" onclick="setScenario('baseline')">Baseline</button>
+          <button class="scen-btn active" id="scen-custom" onclick="setScenario('custom')">Custom</button>
+          <button class="scen-btn" onclick="setScenario('solar')">Solar Rush</button>
+          <button class="scen-btn" onclick="setScenario('engineered')">Engineered</button>
+        </div>
+
+        <div class="sl-group">
+          <div class="sl-top">
+            <span class="sl-name">Solar + Wind share</span>
+            <span class="sl-val" id="sw-display" style="color:#d97706">35%</span>
+          </div>
+          <input type="range" min="0" max="80" value="35" step="1" id="sw-sl" oninput="onSlider()">
+          <div class="sl-hints"><span>0%</span><span>20%</span><span>40%</span><span>60%</span><span>80%</span></div>
+        </div>
+
+        <div class="sl-group">
+          <div class="sl-top">
+            <span class="sl-name">Dispatchable capacity</span>
+            <span class="sl-val" id="disp-display" style="color:#16a34a">30%</span>
+          </div>
+          <input type="range" min="0" max="100" value="30" step="1" id="disp-sl" oninput="onSlider()">
+          <div class="sl-hints"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+        </div>
+
+        <div class="presets-wrap">
+          <div class="presets-label">Country presets</div>
+          <div class="presets-btns">
+            <button class="preset-btn" onclick="applyPreset(35,30,'Thailand 2024')">🇹🇭 Thailand now</button>
+            <button class="preset-btn" onclick="applyPreset(54,8,'Thailand 2035 Solar Rush')">🇹🇭 TH 2035 Rush</button>
+            <button class="preset-btn" onclick="applyPreset(22,77,'France')">🇫🇷 France</button>
+            <button class="preset-btn" onclick="applyPreset(68,20,'Denmark')">🇩🇰 Denmark</button>
+            <button class="preset-btn" onclick="applyPreset(45,12,'Vietnam')">🇻🇳 Vietnam</button>
+            <button class="preset-btn" onclick="applyPreset(55,42,'Germany')">🇩🇪 Germany</button>
+          </div>
+        </div>
+
+        <!-- RIS breakdown -->
+        <div style="margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--border)">
+          <div class="presets-label" style="margin-bottom:.1rem">ที่มาของความเสี่ยง (RIS breakdown)</div>
+          <div style="font-size:11px;color:var(--ink4);margin-bottom:.7rem">แต่ละแถบแสดงว่าความเสี่ยงมาจากอะไรมากที่สุด</div>
+          <div id="breakdown-wrap">
+            <div class="breakdown-row">
+              <div style="width:155px;flex-shrink:0">
+                <div style="font-size:12px;font-weight:600;color:var(--ink)">ความไม่แน่นอนของพลังงาน</div>
+                <div style="font-size:10px;color:var(--ink4);font-family:'JetBrains Mono',monospace">Solar+Wind ผันผวนตามอากาศ</div>
+              </div>
+              <div class="breakdown-bar-wrap"><div class="breakdown-bar" id="br-sw" style="background:#f59e0b"></div></div>
+              <span class="breakdown-val" id="brv-sw">—</span>
+            </div>
+            <div class="breakdown-row" style="margin-top:.5rem">
+              <div style="width:155px;flex-shrink:0">
+                <div style="font-size:12px;font-weight:600;color:var(--ink)">ช่องว่างความเสี่ยง</div>
+                <div style="font-size:10px;color:var(--ink4);font-family:'JetBrains Mono',monospace">SW มากกว่าที่ระบบรองรับได้</div>
+              </div>
+              <div class="breakdown-bar-wrap"><div class="breakdown-bar" id="br-gap" style="background:#f97316"></div></div>
+              <span class="breakdown-val" id="brv-gap">—</span>
+            </div>
+            <div class="breakdown-row" style="margin-top:.5rem">
+              <div style="width:155px;flex-shrink:0">
+                <div style="font-size:12px;font-weight:600;color:var(--ink)">ระบบรองรับขาด</div>
+                <div style="font-size:10px;color:var(--ink4);font-family:'JetBrains Mono',monospace">Nuclear/Hydro ไม่เพียงพอ</div>
+              </div>
+              <div class="breakdown-bar-wrap"><div class="breakdown-bar" id="br-disp" style="background:#3b82f6"></div></div>
+              <span class="breakdown-val" id="brv-disp">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="output-col">
+        <div class="ris-card" id="ris-card">
+          <div class="ris-tag">Renewable Integration Stress Index</div>
+          <div class="ris-big" id="ris-num">--<span class="ris-pct">%</span></div>
+          <div class="ris-badge" id="ris-status">—</div>
+          <div class="ris-prog-wrap">
+            <div class="ris-prog-track">
+              <div class="ris-prog-fill" id="ris-prog" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="ris-source">Predicted from: β₀=18.52 · β_SW=0.814 · β_Disp=−0.167 · β_int=−0.007 (Late period FE model)</div>
+        </div>
+
+        <div class="insight-card" style="border-left:3px solid #d97706">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9px;background:#0f0e0c;color:#fbbf24;padding:2px 7px;border-radius:3px;letter-spacing:.1em;text-transform:uppercase">System Insight Engine</span>
+          </div>
+          <div class="insight-inner" id="insight-text" style="font-size:14px">ปรับ slider เพื่อดู insight</div>
+        </div>
+
+        <div class="card-sm" style="background:var(--bg3)">
+          <div class="presets-label" style="margin-bottom:.4rem">Current context</div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink2)" id="ctx-row">
+            <span>SW: <strong id="ctx-sw">35%</strong></span>
+            <span>Dispatchable: <strong id="ctx-disp">30%</strong></span>
+            <span>Gap: <strong id="ctx-gap">+5%</strong></span>
+            <span>RIS: <strong id="ctx-ris">—</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────── PANEL 02: SCENARIO COMPARISON ──────────── -->
+  <div class="panel" id="panel-comp">
+    <div class="sec-head">
+      <span class="sec-badge">02</span>
+      <span class="sec-title">Scenario Comparison · Thailand 2035</span>
+      <div class="sec-line"></div>
+    </div>
+    <p class="sec-sub">ระดับ Renewable เท่ากัน — แต่ System Architecture ต่างกัน → ผลลัพธ์ต่างกันถึง 29 เท่า นี่คือ <strong>System Design Gap</strong> ไม่ใช่ Technology Gap</p>
+
+    <div class="comp-cards" id="comp-grid"></div>
+
+    <div class="gap-block">
+      <div class="gap-num">29×</div>
+      <div class="gap-text">
+        ช่องว่างสูงสุด: <strong>Solar Rush + Fragile Grid → RIS 54.45%</strong> vs <strong>France Reference → RIS 1.87%</strong><br>
+        ประเทศที่มี Dispatchable capacity สูง (เช่น ฝรั่งเศสด้วย Nuclear) สามารถรับ Renewable ได้โดยไม่เกิด stress<br>
+        <span style="color:#888;font-size:12px;margin-top:.25rem;display:block">RIS = 0.5·SW + 0.3·Gap + 0.2·(100−Dispatchable) · constructed pre-instability indicator</span>
+      </div>
+    </div>
+
+    <div class="chart-card mt15">
+      <div class="presets-label" style="margin-bottom:.75rem">RIS ตาม Structural Regime · ไทย 2035</div>
+      <div style="position:relative;width:100%;height:280px">
+        <canvas id="scenChart" role="img" aria-label="Grouped bar chart of RIS scenarios for Thailand 2035 across three structural regimes">Scenario comparison chart: BAU, Solar Rush, Engineered, France Ref across Tech Accelerated, Baseline, and Fragile Grid regimes</canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────── PANEL 03: COUNTRY EXPLORER ──────────── -->
+  <div class="panel" id="panel-country">
+    <div class="sec-head">
+      <span class="sec-badge">03</span>
+      <span class="sec-title">Country Explorer · Same Renewable, Different Risk</span>
+      <div class="sec-line"></div>
+    </div>
+    <p class="sec-sub">กดเลือกประเทศเพื่อเปรียบเทียบ — SW ใกล้เคียงกัน แต่ RIS ต่างกันมาก เพราะ <strong>System Architecture</strong> ต่างกัน</p>
+
+    <!-- Same SW mode toggle -->
+    <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:.85rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:14px;font-weight:500;color:#1e40af">
+        <input type="checkbox" id="same-sw-toggle" onchange="onSameSW()" style="width:16px;height:16px;accent-color:#1e40af;cursor:pointer">
+        <span>Fix SW = <span id="same-sw-val" style="font-family:'JetBrains Mono',monospace">50</span>% สำหรับทุกประเทศ</span>
+      </label>
+      <input type="range" min="10" max="70" value="50" step="1" id="same-sw-sl" oninput="onSameSWVal()" style="width:140px;height:5px;accent-color:#1e40af">
+      <div style="font-size:12px;color:#1e40af;flex:1">
+        <span id="same-sw-hint">เปิดเพื่อดูว่า — ถ้า SW เท่ากัน RIS ยังต่างกันไหม?</span>
+      </div>
+    </div>
+
+    <!-- Country selector -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem" id="country-btns"></div>
+
+    <!-- Main comparison: selected vs Thailand -->
+    <div class="g2" style="margin-bottom:1.25rem">
+      <div class="card" id="c-thailand-card">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+          <span style="font-size:28px">🇹🇭</span>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700">Thailand</div>
+            <div style="font-size:12px;color:var(--ink3)">Main case · 2024</div>
+          </div>
+          <div style="margin-left:auto">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;color:#d97706" id="c-th-ris">—</div>
+            <div style="font-size:10px;color:var(--ink3);text-align:right">RIS</div>
+          </div>
+        </div>
+        <div id="c-th-bars"></div>
+        <div id="c-th-badge" style="margin-top:.75rem"></div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:.5rem" id="c-th-note"></div>
+      </div>
+
+      <div class="card" id="c-selected-card">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+          <span style="font-size:28px" id="c-sel-flag">🌍</span>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700" id="c-sel-name">เลือกประเทศ</div>
+            <div style="font-size:12px;color:var(--ink3)" id="c-sel-sub">กดปุ่มด้านบน</div>
+          </div>
+          <div style="margin-left:auto">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500" id="c-sel-ris" style="color:var(--ink3)">—</div>
+            <div style="font-size:10px;color:var(--ink3);text-align:right">RIS</div>
+          </div>
+        </div>
+        <div id="c-sel-bars"></div>
+        <div id="c-sel-badge" style="margin-top:.75rem"></div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:.5rem" id="c-sel-note"></div>
+      </div>
+    </div>
+
+    <!-- Key contrast callout -->
+    <div id="c-contrast" style="display:none;background:var(--ink);border-radius:var(--radius);padding:1.25rem 1.75rem;color:#fff;margin-bottom:1.25rem">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem">Key contrast</div>
+      <div style="font-size:15px;color:#ddd;line-height:1.8" id="c-contrast-text"></div>
+    </div>
+
+    <!-- All countries overview chart -->
+    <div class="chart-card">
+      <div class="presets-label" style="margin-bottom:.75rem">ภาพรวมทุกประเทศ · SW vs RIS</div>
+      <div style="position:relative;width:100%;height:300px">
+        <canvas id="countryChart" role="img" aria-label="Scatter chart comparing SW share and RIS across countries">Scatter plot showing countries by Solar+Wind share (x) vs RIS (y). Countries with high dispatchable capacity cluster lower despite similar SW.</canvas>
+      </div>
+      <div class="data-note" style="margin-top:.6rem">X = Solar+Wind share · Y = RIS · ขนาดฟอง = Dispatchable capacity · สีแดง = CRITICAL · สีเหลือง = STRESS · สีเขียว = STABLE</div>
+    </div>
+  </div>
+
+  <!-- ──────────── PANEL 04: INTERACTION ──────────── -->
+  <div class="panel" id="panel-inter">
+    <div class="sec-head">
+      <span class="sec-badge">03</span>
+      <span class="sec-title">Interaction Effect · SW vs RIS by Dispatchable Level</span>
+      <div class="sec-line"></div>
+    </div>
+    <p class="sec-sub">Slope ของแต่ละเส้น = marginal effect ของ SW ที่ระดับ Dispatchable ต่างกัน — Dispatchable สูง → slope ลดลง (buffering effect) ยืนยันจาก β_int = −0.0059 (p&lt;0.001)</p>
+
+    <div class="chart-card">
+      <div class="chart-legend" id="inter-legend"></div>
+      <div style="position:relative;width:100%;height:320px">
+        <canvas id="interChart" role="img" aria-label="Multi-line chart showing RIS vs Solar+Wind share at different Dispatchable levels">Lines for Dispatchable 10%, 30%, 60%, 80% — higher dispatchable flattens slope</canvas>
+      </div>
+      <div class="data-note" style="margin-top:.75rem">X = Solar + Wind share (%) · Y = Predicted RIS (%) · Lines = Dispatchable capacity levels · β from Fixed Effects model (N=767)</div>
+    </div>
+
+    <div class="g2 mt15">
+      <div class="card">
+        <div class="presets-label" style="margin-bottom:.75rem">Non-stationarity: β_SW เปลี่ยนตามเวลา</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="background:var(--bg3);border-radius:8px;padding:1rem;text-align:center">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;color:#3b82f6">0.788</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:.2rem">Early 2000–2010</div>
+            <div style="font-size:11px;color:var(--ink2);margin-top:.3rem">β_int = −0.011</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:1rem;text-align:center">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;color:#c84b31">0.814</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:.2rem">Late 2011–2025</div>
+            <div style="font-size:11px;color:var(--ink2);margin-top:.3rem">β_int = −0.007</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:.75rem;line-height:1.6">β_int อ่อนตัวลงตามเวลา → Dispatchable buffering กำลัง decouple จาก SW ยืนยัน <strong>non-stationary assumption</strong></div>
+      </div>
+      <div class="card">
+        <div class="presets-label" style="margin-bottom:.75rem">VIF check · ไม่มี multicollinearity</div>
+        <div style="position:relative;width:100%;height:160px">
+          <canvas id="vifChart" role="img" aria-label="Bar chart of VIF values, all below 2">VIF: SW 1.62, Dispatchable 1.42, Interaction 1.58 — all well below threshold of 5</canvas>
+        </div>
+        <div class="data-note" style="margin-top:.5rem">VIF &lt; 2 ทุกตัวแปร · Threshold = 5 · ไม่มีปัญหา multicollinearity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────── PANEL 05: POLICY TOOL ──────────── -->
+  <div class="panel" id="panel-policy">
+    <div class="sec-head">
+      <span class="sec-badge">05</span>
+      <span class="sec-title">Policy Tool · What if Thailand invests in Dispatchable capacity?</span>
+      <div class="sec-line"></div>
+    </div>
+    <p class="sec-sub">เครื่องมือสำหรับ policy maker — ดูว่าการลงทุนใน Dispatchable capacity เพิ่มเติมจะลด RIS ได้มากแค่ไหน (β จาก Fixed Effects model จริง)</p>
+
+    <div class="policy-layout">
+      <div class="card">
+        <div class="presets-label" style="margin-bottom:.75rem">Baseline: Thailand 2024</div>
+        <div class="policy-info-row">
+          <span class="policy-info-label">Solar + Wind share (SW)</span>
+          <span class="policy-info-val">35%</span>
+        </div>
+        <div class="policy-info-row">
+          <span class="policy-info-label">Current Dispatchable</span>
+          <span class="policy-info-val">30%</span>
+        </div>
+        <div class="policy-info-row">
+          <span class="policy-info-label">Current RIS</span>
+          <span class="policy-info-val" id="policy-base-ris">—</span>
+        </div>
+
+        <div class="sl-group" style="margin-top:1.25rem">
+          <div class="sl-top">
+            <span class="sl-name">+ Dispatchable investment</span>
+            <span class="sl-val" id="policy-add-display" style="color:#1e40af">+0%</span>
+          </div>
+          <input type="range" min="0" max="60" value="0" step="1" id="policy-sl" oninput="onPolicy()">
+          <div class="sl-hints"><span>+0%</span><span>+15%</span><span>+30%</span><span>+45%</span><span>+60%</span></div>
+        </div>
+        <div style="font-size:11px;color:var(--ink3)">เพิ่ม Dispatchable (Nuclear / Hydro / Grid-scale Storage) จาก baseline 30%</div>
+
+        <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)">
+          <div class="presets-label" style="margin-bottom:.5rem">Policy presets</div>
+          <div class="presets-btns">
+            <button class="preset-btn" onclick="setPolicy(0)">ไม่ลงทุน (baseline)</button>
+            <button class="preset-btn" onclick="setPolicy(10)">+10% (conservative)</button>
+            <button class="preset-btn" onclick="setPolicy(25)">+25% (moderate)</button>
+            <button class="preset-btn" onclick="setPolicy(47)">+47% → France level</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="presets-label" style="margin-bottom:.75rem">Policy impact</div>
+
+        <div class="delta-block" id="delta-block">
+          <div class="delta-num" id="delta-num">−0.00%</div>
+          <div class="delta-label" id="delta-label">RIS ลดลงจาก investment</div>
+          <div class="delta-sub" id="delta-sub">ปรับ slider เพื่อดูผล</div>
+        </div>
+
+        <div style="margin-top:1.1rem">
+          <div class="policy-bar-row">
+            <span class="policy-bar-label">RIS ก่อน</span>
+            <div class="policy-bar-track"><div class="policy-bar-fill" id="pb-before" style="width:0%"></div></div>
+            <span class="policy-bar-val" id="pv-before">—</span>
+          </div>
+          <div class="policy-bar-row">
+            <span class="policy-bar-label">RIS หลัง</span>
+            <div class="policy-bar-track"><div class="policy-bar-fill" id="pb-after" style="width:0%"></div></div>
+            <span class="policy-bar-val" id="pv-after">—</span>
+          </div>
+        </div>
+
+        <!-- TARGET MODE -->
+        <div style="margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--border)">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;background:#0f0e0c;color:#fbbf24;padding:2px 7px;border-radius:3px;letter-spacing:.1em;text-transform:uppercase;display:inline-block;margin-bottom:.75rem">Target Mode</div>
+          <div style="font-size:13px;color:var(--ink2);margin-bottom:.75rem">ต้องเพิ่ม Dispatchable เท่าไหร่ จึงจะ <strong>STABLE</strong>?</div>
+          <div id="target-answer" style="background:var(--bg3);border-radius:8px;padding:1rem;text-align:center">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:500;color:var(--ink3)" id="target-num">—</div>
+            <div style="font-size:12px;color:var(--ink3);margin-top:.2rem" id="target-label">กด Calculate</div>
+            <button onclick="calcTarget()" style="margin-top:.6rem;font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 14px;border:1px solid var(--border2);background:var(--ink);color:#fff;border-radius:5px;cursor:pointer;letter-spacing:.04em">Calculate → STABLE</button>
+          </div>
+        </div>
+
+        <div class="data-note" style="margin-top:1rem">β_Disp=−0.167 · β_int(SW×Disp)=−0.007 · SW fixed at Thailand baseline 35%<br>สมการ: RIS = 18.52 + 0.814·SW − 0.167·Disp − 0.007·(SW×Disp)</div>
+      </div>
+    </div>
+
+    <!-- Policy insight -->
+    <div class="card-dark mt15">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Key insight from policy simulation</div>
+      <div style="font-size:15px;color:#ddd;line-height:1.8" id="policy-insight-text">
+        ปรับ slider เพื่อดู policy insight
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<!-- THEME FOOTER -->
+<div class="theme-footer">
+  <div class="theme-inner">
+    <div class="theme-quote">
+      "Post-Oil Transition คือ System Architecture Problem — ไม่ใช่ Technology Problem.
+      นี่คือการออกแบบระบบพลังงาน ไม่ใช่แค่เลือกพลังงาน"
+    </div>
+    <div class="theme-tag">Earth Engineering · Track C</div>
+  </div>
+  <div style="max-width:1100px;margin:.5rem auto 0;padding:0 2rem">
+    <div class="data-note">Data: Ember Electricity Data · Our World in Data (OWID) · DOEB Open Data · N=30 countries · 2000–2025 · RIS = pre-instability indicator · Structural Sensitivity Analysis · Not Causal</div>
+  </div>
+</div>
+
+<script>
+// ── REGRESSION COEFFICIENTS (Fixed Effects, Late period) ──
+const B0=18.52, B_SW=0.814, B_DISP=-0.167, B_INT=-0.007;
+
+function calcRIS(sw, disp){
+  return Math.max(0, B0 + B_SW*sw + B_DISP*disp + B_INT*sw*disp);
+}
+function risColor(v){
+  if(v<25) return '#15803d';
+  if(v<40) return '#d97706';
+  return '#dc2626';
+}
+function risClass(v){
+  if(v<25) return 'stable';
+  if(v<40) return 'moderate';
+  return 'critical';
+}
+function risStatus(v){
+  if(v<25) return 'STABLE';
+  if(v<40) return 'STRESS';
+  return 'CRITICAL';
+}
+function risInsight(sw, disp, ris){
+  const gap = sw - disp;
+  if(ris < 15) return `ระบบอยู่ในโซน <strong>เสถียรมาก</strong> — Dispatchable (${disp}%) ครอบคลุม SW (${sw}%) ได้อย่างสมบูรณ์ นี่คือ target state`;
+  if(ris < 25) return `ระบบ <strong>เสถียร</strong> — Dispatchable (${disp}%) รองรับ SW (${sw}%) ได้ดี ความเสี่ยงต่ำ ยังมี buffer เพียงพอ`;
+  if(ris < 35) return `ความเสี่ยง <strong>ปานกลาง</strong> — SW เริ่มกดดันระบบ ${gap > 0 ? 'Gap = '+gap.toFixed(0)+'% · ควรพิจารณาเพิ่ม Dispatchable' : 'แต่ยังอยู่ในระดับรับได้'}`;
+  if(ris < 45) return `<strong>เตือน:</strong> SW (${sw}%) สูงกว่า Dispatchable (${disp}%) — เข้าสู่ Stress Zone · การเพิ่ม Dispatchable +10% จะลด RIS ได้ประมาณ ${(10*0.167 + 0.007*sw*10).toFixed(1)} pp`;
+  return `<strong>วิกฤต (Grid Shock Zone):</strong> RIS ${ris.toFixed(1)}% — ระดับใกล้เคียงกับที่เวียดนามเกิด curtailment จริง · ต้องการ System Redesign ทันที ไม่ใช่แค่เพิ่ม Renewable`;
+}
+
+// ── STATE ──
+let swVal=35, dispVal=30;
+
+function render(){
+  const ris = calcRIS(swVal, dispVal);
+  const cls = risClass(ris);
+  const col = risColor(ris);
+  const gap = Math.max(swVal - dispVal, 0);
+
+  // display updates
+  document.getElementById('sw-display').textContent = swVal+'%';
+  document.getElementById('disp-display').textContent = dispVal+'%';
+  document.getElementById('ris-num').innerHTML = ris.toFixed(2)+'<span class="ris-pct">%</span>';
+  document.getElementById('ris-num').style.color = col;
+  const card = document.getElementById('ris-card');
+  card.className = 'ris-card '+cls;
+  document.getElementById('ris-status').textContent = risStatus(ris);
+  document.getElementById('ris-prog').style.width = Math.min(ris/65*100, 100)+'%';
+  document.getElementById('ris-prog').style.background = col;
+  document.getElementById('insight-text').innerHTML = risInsight(swVal, dispVal, ris);
+
+  // context row
+  document.getElementById('ctx-sw').textContent = swVal+'%';
+  document.getElementById('ctx-disp').textContent = dispVal+'%';
+  document.getElementById('ctx-gap').textContent = (gap>=0?'+':'')+gap.toFixed(0)+'%';
+  document.getElementById('ctx-ris').textContent = ris.toFixed(2)+'%';
+  document.getElementById('ctx-ris').style.color = col;
+
+  // breakdown
+  const c1 = 0.5*swVal, c2 = 0.3*gap, c3 = 0.2*(100-dispVal);
+  const total = c1+c2+c3;
+  document.getElementById('br-sw').style.width = Math.min(c1/total*100, 100)+'%';
+  document.getElementById('br-gap').style.width = Math.min(c2/total*100, 100)+'%';
+  document.getElementById('br-disp').style.width = Math.min(c3/total*100, 100)+'%';
+  document.getElementById('brv-sw').textContent = c1.toFixed(1);
+  document.getElementById('brv-gap').textContent = c2.toFixed(1);
+  document.getElementById('brv-disp').textContent = c3.toFixed(1);
+
+  onPolicy();
+}
+
+function onSlider(){
+  swVal = parseInt(document.getElementById('sw-sl').value);
+  dispVal = parseInt(document.getElementById('disp-sl').value);
+  markCustom();
+  render();
+}
+
+function markCustom(){
+  document.querySelectorAll('.scen-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('scen-custom').classList.add('active');
+}
+
+function applyPreset(sw, disp, name){
+  swVal = sw; dispVal = disp;
+  document.getElementById('sw-sl').value = sw;
+  document.getElementById('disp-sl').value = disp;
+  markCustom();
+  render();
+}
+
+function setScenario(name){
+  document.querySelectorAll('.scen-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const map = {baseline:[31,32], solar:[54,8], engineered:[35,50]};
+  if(map[name]){
+    swVal = map[name][0]; dispVal = map[name][1];
+    document.getElementById('sw-sl').value = swVal;
+    document.getElementById('disp-sl').value = dispVal;
+    render();
+  }
+}
+
+// ── POLICY ──
+function setPolicy(v){
+  document.getElementById('policy-sl').value = v;
+  onPolicy();
+}
+
+function onPolicy(){
+  const add = parseInt(document.getElementById('policy-sl').value);
+  document.getElementById('policy-add-display').textContent = '+'+add+'%';
+  const baseSW = 35, baseDisp = 30;
+  const risBefore = calcRIS(baseSW, baseDisp);
+  const risAfter  = calcRIS(baseSW, baseDisp + add);
+  const delta = risBefore - risAfter;
+
+  document.getElementById('policy-base-ris').textContent = risBefore.toFixed(2)+'%';
+  document.getElementById('delta-num').textContent = '−'+delta.toFixed(2)+'%';
+  document.getElementById('delta-sub').textContent = `จาก ${risBefore.toFixed(2)}% → ${risAfter.toFixed(2)}% เมื่อเพิ่ม Dispatchable +${add}%`;
+
+  const db = document.getElementById('delta-block');
+  const dn = document.getElementById('delta-num');
+  if(add > 0){
+    db.classList.add('active');
+    dn.classList.add('green');
+  } else {
+    db.classList.remove('active');
+    dn.classList.remove('green');
+  }
+
+  document.getElementById('pb-before').style.width = Math.min(risBefore/65*100, 100)+'%';
+  document.getElementById('pb-before').style.background = risColor(risBefore);
+  document.getElementById('pb-after').style.width  = Math.min(risAfter/65*100, 100)+'%';
+  document.getElementById('pb-after').style.background = risColor(risAfter);
+  document.getElementById('pv-before').textContent = risBefore.toFixed(2)+'%';
+  document.getElementById('pv-after').textContent  = risAfter.toFixed(2)+'%';
+
+  // policy insight
+  let insight = '';
+  if(add === 0){
+    insight = 'ไม่มีการลงทุน — RIS คงที่ที่ '+risBefore.toFixed(2)+'% ซึ่งยังอยู่ในโซน '+risStatus(risBefore);
+  } else if(add <= 15){
+    insight = `การลงทุน +${add}% Dispatchable ลด RIS ได้ <strong style="color:#fbbf24">${delta.toFixed(2)} pp</strong> — เป็นจุดเริ่มต้นที่ดี แต่ยังไม่เพียงพอสำหรับ Solar Rush scenario`;
+  } else if(add <= 35){
+    insight = `การลงทุน +${add}% Dispatchable ลด RIS ได้ <strong style="color:#fbbf24">${delta.toFixed(2)} pp</strong> จาก ${risBefore.toFixed(1)}% → ${risAfter.toFixed(1)}% — เป็น <strong style="color:#fbbf24">Moderate policy</strong> ที่ทำให้ระบบ${risStatus(risAfter) === 'STABLE' ? '<strong style="color:#4ade80"> เสถียร</strong>' : 'ดีขึ้น'}`;
+  } else {
+    insight = `การลงทุน +${add}% Dispatchable ลด RIS ได้ <strong style="color:#4ade80">${delta.toFixed(2)} pp</strong> — เทียบเท่าระดับ France-like system design · RIS = ${risAfter.toFixed(2)}% (${risStatus(risAfter)})`;
+  }
+  document.getElementById('policy-insight-text').innerHTML = insight;
+}
+
+// ── NAV ──
+// track which charts have been built (lazy init — charts in hidden panels render as 0×0)
+const _chartBuilt = {};
+
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  event.target.classList.add('active');
+
+  // lazy-init charts when their panel is first opened
+  if(id === 'comp' && !_chartBuilt.comp){
+    _chartBuilt.comp = true;
+    buildScenChart();
+  }
+  if(id === 'inter' && !_chartBuilt.inter){
+    _chartBuilt.inter = true;
+    buildInterChart();
+    buildVifChart();
+  }
+  if(id === 'country' && !_chartBuilt.country){
+    _chartBuilt.country = true;
+    buildCountryChart();
+  }
+}
+
+// ── SCENARIO COMPARISON CARDS ──
+const scenarios = [
+  {name:'BAU',         sw:31, disp:32, color:'#3b82f6'},
+  {name:'Solar Rush',  sw:54, disp:8,  color:'#ef4444', highlight:true},
+  {name:'Engineered',  sw:35, disp:50, color:'#f59e0b'},
+  {name:'France Ref.', sw:22, disp:77, color:'#16a34a'},
+];
+
+function buildCompCards(){
+  const grid = document.getElementById('comp-grid');
+  scenarios.forEach(s => {
+    const ris = calcRIS(s.sw, s.disp);
+    const col = risColor(ris);
+    const barW = Math.min(ris/60*100, 100);
+    const div = document.createElement('div');
+    div.className = 'comp-card' + (s.highlight ? ' highlighted' : '');
+    div.innerHTML = `
+      <div class="comp-card-name">${s.name}</div>
+      <div class="comp-card-ris" style="color:${col}">${ris.toFixed(2)}%</div>
+      <div class="comp-card-status" style="color:${col}">${risStatus(ris)}</div>
+      <div class="comp-bar" style="width:${barW}%;background:${col};height:5px"></div>
+      <div style="font-size:10px;color:var(--ink4);margin-top:.5rem;font-family:'JetBrains Mono',monospace">SW=${s.sw}% · Disp=${s.disp}%</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+buildCompCards();
+
+// ── SCENARIO BAR CHART ──
+function buildScenChart(){
+  const regime_vals = {
+    'BAU':         [24.35, 31.22, 35.18],
+    'Solar Rush':  [37.53, 48.29, 54.45],
+    'Engineered':  [33.82, 44.70, 50.68],
+    'France Ref.': [1.87,  11.51, 14.20],
+  };
+  const colors = ['#3b82f6','#ef4444','#f59e0b','#16a34a'];
+  const regimes = ['Tech Acc.','Baseline','Fragile Grid'];
+  const datasets = Object.entries(regime_vals).map(([name, data], i) => ({
+    label: name,
+    data,
+    backgroundColor: colors[i]+'cc',
+    borderColor: colors[i],
+    borderWidth: 1,
+    borderRadius: 4,
+  }));
+  new Chart(document.getElementById('scenChart'), {
+    type: 'bar',
+    data: { labels: regimes, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%` } }
+      },
+      scales: {
+        x: { ticks: { color:'#888', font:{size:12} }, grid: { display:false } },
+        y: { ticks: { color:'#888', font:{size:11}, callback: v => v+'%' }, grid: { color:'#f0ede8' }, title: { display:true, text:'RIS (%)', color:'#aaa', font:{size:11} } }
+      }
+    }
+  });
+
+  // manual legend
+  const legEl = document.createElement('div');
+  legEl.style.cssText = 'display:flex;gap:1.25rem;flex-wrap:wrap;margin-bottom:.75rem;font-size:12px;color:#555';
+  Object.keys(regime_vals).forEach((name, i) => {
+    legEl.innerHTML += `<span style="display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;background:${colors[i]};display:inline-block;border-radius:2px"></span>${name}</span>`;
+  });
+  document.getElementById('scenChart').parentElement.parentElement.insertBefore(legEl, document.getElementById('scenChart').parentElement);
+}
+
+// ── INTERACTION CHART ──
+function buildInterChart(){
+  const dispLevels = [10, 30, 60, 80];
+  const lineColors = ['#ef4444','#f97316','#3b82f6','#16a34a'];
+  const dashPatterns = [[], [6,3], [2,2], [8,4,2,4]];
+  const swArr = Array.from({length:41}, (_,i) => i*2);
+  const datasets = dispLevels.map((d,i) => ({
+    label: `Dispatchable ${d}%`,
+    data: swArr.map(s => Math.max(0, calcRIS(s, d))),
+    borderColor: lineColors[i],
+    backgroundColor: 'transparent',
+    borderWidth: 2.5,
+    pointRadius: 0,
+    tension: 0.3,
+    borderDash: dashPatterns[i],
+  }));
+  new Chart(document.getElementById('interChart'), {
+    type: 'line',
+    data: { labels: swArr.map(s=>s+'%'), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          title: { display:true, text:'Solar + Wind Share (%)', color:'#aaa', font:{size:11} },
+          ticks: { color:'#aaa', font:{size:10}, maxTicksLimit:9 },
+          grid: { color:'#f0ede8' }
+        },
+        y: {
+          title: { display:true, text:'Predicted RIS (%)', color:'#aaa', font:{size:11} },
+          ticks: { color:'#aaa', font:{size:10}, callback: v => v.toFixed(0)+'%' },
+          grid: { color:'#f0ede8' }
+        }
+      }
+    }
+  });
+
+  const leg = document.getElementById('inter-legend');
+  dispLevels.forEach((d,i) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<div class="legend-line" style="background:${lineColors[i]}"></div>Dispatchable ${d}%`;
+    leg.appendChild(item);
+  });
+}
+
+// ── VIF CHART ──
+function buildVifChart(){
+  new Chart(document.getElementById('vifChart'), {
+    type: 'bar',
+    data: {
+      labels: ['SW','Dispatchable','Interaction'],
+      datasets: [{
+        data: [1.615, 1.423, 1.579],
+        backgroundColor: ['#86efac','#86efac','#86efac'],
+        borderColor: ['#16a34a','#16a34a','#16a34a'],
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display:false } },
+      scales: {
+        x: { ticks: { color:'#888', font:{size:11} }, grid: { display:false } },
+        y: { min:0, max:3, ticks: { color:'#888', font:{size:10}, callback: v=>v.toFixed(1) }, grid: { color:'#f0ede8' },
+          title: { display:true, text:'VIF', color:'#aaa', font:{size:10} } }
+      }
+    }
+  });
+}
+
+// ── INIT ──
+render();
+onPolicy();
+
+// ── COUNTRY DATA ──
+const COUNTRIES = [
+  { id:'th',    flag:'🇹🇭', name:'Thailand',     year:'2024', sw:35, disp:30, story:'Main case — กำลังเร่ง Solar แต่ระบบรองรับยังไม่พร้อม'},
+  { id:'fr',    flag:'🇫🇷', name:'France',       year:'2024', sw:22, disp:77, story:'Benchmark — Nuclear สูง ทำให้รับ Renewable ได้โดยไม่ stress'},
+  { id:'dk',    flag:'🇩🇰', name:'Denmark',      year:'2024', sw:68, disp:20, story:'High SW แต่ Grid Design ดี — เชื่อมต่อยุโรปช่วย balance'},
+  { id:'de',    flag:'🇩🇪', name:'Germany',      year:'2024', sw:55, disp:42, story:'Transition stress — SW สูงขึ้นเร็ว Dispatchable ลดลงหลังปิด Nuclear'},
+  { id:'vn',    flag:'🇻🇳', name:'Vietnam',      year:'2024', sw:45, disp:12, story:'คำเตือน — Solar Rush โดยไม่มีโครงสร้าง → curtailment จริงในปี 2023'},
+  { id:'jp',    flag:'🇯🇵', name:'Japan',        year:'2024', sw:25, disp:38, story:'หลัง Fukushima — Nuclear ลดลง กำลังหา balance ใหม่'},
+  { id:'es',    flag:'🇪🇸', name:'Spain',        year:'2024', sw:50, disp:35, story:'Transition สำเร็จ — Renewable สูงแต่มี Hydro+Gas backup'},
+  { id:'au',    flag:'🇦🇺', name:'Australia',    year:'2024', sw:48, disp:18, story:'Grid stress สูง — Solar boom แต่ระบบ storage ยังตามไม่ทัน'},
+  { id:'in',    flag:'🇮🇳', name:'India',        year:'2024', sw:22, disp:20, story:'Emerging — SW กำลังเติบโตเร็ว ระบบรองรับยังจำกัด'},
+  { id:'kr',    flag:'🇰🇷', name:'South Korea',  year:'2024', sw:10, disp:45, story:'Conservative — Nuclear สูง แต่ SW ยังน้อยมาก กำลัง transition'},
+  { id:'pt',    flag:'🇵🇹', name:'Portugal',     year:'2024', sw:52, disp:38, story:'Success story — Hydro + Solar ดี balance ระบบได้ดี'},
+  { id:'id',    flag:'🇮🇩', name:'Indonesia',    year:'2024', sw:12, disp:22, story:'Early stage — Renewable น้อย แต่ dispatchable ก็ยังต่ำ'},
+];
+
+const TH = COUNTRIES.find(c => c.id === 'th');
+let selectedCountry = null;
+let countryChartInstance = null;
+
+function buildCountryBtns(){
+  const wrap = document.getElementById('country-btns');
+  COUNTRIES.filter(c => c.id !== 'th').forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'scen-btn';
+    btn.id = 'cbtn-'+c.id;
+    btn.innerHTML = `${c.flag} ${c.name}`;
+    btn.onclick = () => selectCountry(c.id);
+    wrap.appendChild(btn);
+  });
+}
+
+function countryBars(sw, disp, containerId){
+  const gap = Math.max(sw-disp, 0);
+  const c1 = (0.5*sw).toFixed(1);
+  const c2 = (0.3*gap).toFixed(1);
+  const c3 = (0.2*(100-disp)).toFixed(1);
+  const total = parseFloat(c1)+parseFloat(c2)+parseFloat(c3)||1;
+  return `
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
+      <div style="font-size:11px;color:var(--ink3);width:110px;flex-shrink:0">ความไม่แน่นอน SW</div>
+      <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.min(parseFloat(c1)/total*100,100).toFixed(0)}%;background:#f59e0b;border-radius:3px"></div></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;width:28px;text-align:right">${c1}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
+      <div style="font-size:11px;color:var(--ink3);width:110px;flex-shrink:0">ช่องว่างความเสี่ยง</div>
+      <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.min(parseFloat(c2)/total*100,100).toFixed(0)}%;background:#f97316;border-radius:3px"></div></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;width:28px;text-align:right">${c2}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div style="font-size:11px;color:var(--ink3);width:110px;flex-shrink:0">ระบบรองรับขาด</div>
+      <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.min(parseFloat(c3)/total*100,100).toFixed(0)}%;background:#3b82f6;border-radius:3px"></div></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;width:28px;text-align:right">${c3}</div>
+    </div>
+  `;
+}
+
+function renderThailandCard(){
+  const ris = calcRIS(TH.sw, TH.disp);
+  const col = risColor(ris);
+  document.getElementById('c-th-ris').textContent = ris.toFixed(2)+'%';
+  document.getElementById('c-th-ris').style.color = col;
+  document.getElementById('c-th-bars').innerHTML = countryBars(TH.sw, TH.disp);
+  document.getElementById('c-th-badge').innerHTML = `
+    <span style="background:${ris<25?'#dcfce7':ris<40?'#fef3c7':'#fee2e2'};color:${col};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:.06em">${risStatus(ris)}</span>
+    <span style="font-size:11px;color:var(--ink3);margin-left:.5rem">SW=${TH.sw}% · Disp=${TH.disp}%</span>
+  `;
+  document.getElementById('c-th-note').textContent = TH.story;
+}
+
+function buildCountryChart(){
+  const data = COUNTRIES.map(c => ({
+    x: c.sw,
+    y: parseFloat(calcRIS(c.sw, c.disp).toFixed(2)),
+    r: Math.max(6, c.disp / 6),
+    label: c.flag+' '+c.name,
+    ris: calcRIS(c.sw, c.disp),
+    disp: c.disp,
+  }));
+
+  countryChartInstance = new Chart(document.getElementById('countryChart'), {
+    type: 'bubble',
+    data: {
+      datasets: [{
+        data: data,
+        backgroundColor: data.map(d => d.ris < 25 ? '#16a34a44' : d.ris < 40 ? '#d9770644' : '#dc262644'),
+        borderColor: data.map(d => d.ris < 25 ? '#16a34a' : d.ris < 40 ? '#d97706' : '#dc2626'),
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const d = ctx.raw;
+              return [`${d.label}`, `SW: ${d.x}%  RIS: ${d.y}%  Disp: ${d.disp}%`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display:true, text:'Solar + Wind Share (%)', color:'#aaa', font:{size:11} },
+          ticks: { color:'#aaa', font:{size:10}, callback: v=>v+'%' },
+          grid: { color:'#f0ede8' },
+          min: 0, max: 80,
+        },
+        y: {
+          title: { display:true, text:'RIS (%)', color:'#aaa', font:{size:11} },
+          ticks: { color:'#aaa', font:{size:10}, callback: v=>v+'%' },
+          grid: { color:'#f0ede8' },
+          min: 0,
+        }
+      }
+    }
+  });
+
+  // Add country labels via plugin
+  Chart.register({
+    id: 'countryLabels',
+    afterDatasetsDraw(chart){
+      const ctx = chart.ctx;
+      chart.data.datasets[0].data.forEach((d, i) => {
+        const meta = chart.getDatasetMeta(0);
+        const pt = meta.data[i];
+        if(!pt) return;
+        const c = COUNTRIES[i];
+        ctx.font = '11px JetBrains Mono, monospace';
+        ctx.fillStyle = '#444';
+        ctx.textAlign = 'center';
+        ctx.fillText(c.flag, pt.x, pt.y - pt.options.radius - 4);
+      });
+    }
+  });
+}
+
+buildCountryBtns();
+renderThailandCard();
+
+// ── SAME SW MODE ──
+let sameSWActive = false;
+let sameSWValue = 50;
+
+function onSameSW(){
+  sameSWActive = document.getElementById('same-sw-toggle').checked;
+  updateCountryMode();
+}
+function onSameSWVal(){
+  sameSWValue = parseInt(document.getElementById('same-sw-sl').value);
+  document.getElementById('same-sw-val').textContent = sameSWValue;
+  if(sameSWActive) updateCountryMode();
+}
+function updateCountryMode(){
+  const hint = document.getElementById('same-sw-hint');
+  if(sameSWActive){
+    hint.innerHTML = `<strong style="color:#1e40af">โหมด Same SW เปิดแล้ว</strong> — SW ทุกประเทศ = ${sameSWValue}% · ดูว่า RIS ต่างกันเพราะ Dispatchable อย่างเดียว`;
+    // re-render Thailand card with forced SW
+    renderThailandCardSW(sameSWValue);
+    if(selectedCountry) selectCountrySW(selectedCountry.id, sameSWValue);
+  } else {
+    hint.textContent = 'เปิดเพื่อดูว่า — ถ้า SW เท่ากัน RIS ยังต่างกันไหม?';
+    renderThailandCard();
+    if(selectedCountry) selectCountry(selectedCountry.id);
+  }
+}
+function renderThailandCardSW(forcedSW){
+  const ris = calcRIS(forcedSW, TH.disp);
+  const col = risColor(ris);
+  document.getElementById('c-th-ris').textContent = ris.toFixed(2)+'%';
+  document.getElementById('c-th-ris').style.color = col;
+  document.getElementById('c-th-bars').innerHTML = countryBars(forcedSW, TH.disp);
+  document.getElementById('c-th-badge').innerHTML = `
+    <span style="background:${ris<25?'#dcfce7':ris<40?'#fef3c7':'#fee2e2'};color:${col};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:.06em">${risStatus(ris)}</span>
+    <span style="font-size:11px;color:var(--ink3);margin-left:.5rem">SW=${forcedSW}% (fixed) · Disp=${TH.disp}%</span>`;
+  document.getElementById('c-th-note').innerHTML = `<span style="color:#1e40af;font-weight:600">Same SW mode</span> — SW fixed at ${forcedSW}%, Dispatchable = ${TH.disp}%`;
+}
+function selectCountrySW(id, forcedSW){
+  const c = COUNTRIES.find(x => x.id === id);
+  if(!c) return;
+  const ris = calcRIS(forcedSW, c.disp);
+  const thRis = calcRIS(forcedSW, TH.disp);
+  const col = risColor(ris);
+  document.getElementById('c-sel-flag').textContent = c.flag;
+  document.getElementById('c-sel-name').textContent = c.name;
+  document.getElementById('c-sel-sub').textContent = `SW=${forcedSW}% (fixed) · Disp=${c.disp}%`;
+  document.getElementById('c-sel-ris').textContent = ris.toFixed(2)+'%';
+  document.getElementById('c-sel-ris').style.color = col;
+  document.getElementById('c-sel-bars').innerHTML = countryBars(forcedSW, c.disp);
+  document.getElementById('c-sel-badge').innerHTML = `
+    <span style="background:${ris<25?'#dcfce7':ris<40?'#fef3c7':'#fee2e2'};color:${col};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:.06em">${risStatus(ris)}</span>
+    <span style="font-size:11px;color:var(--ink3);margin-left:.5rem">SW=${forcedSW}% (fixed) · Disp=${c.disp}%</span>`;
+  document.getElementById('c-sel-note').innerHTML = `<span style="color:#1e40af;font-weight:600">Same SW mode</span> — SW fixed, ความต่างมาจาก Dispatchable อย่างเดียว`;
+
+  const diff = Math.abs(ris - thRis).toFixed(2);
+  document.getElementById('c-contrast-text').innerHTML =
+    `<strong>SW เท่ากันทุกประเทศ = ${forcedSW}%</strong> — แต่ RIS ต่างกัน <strong style="color:#fbbf24">${diff} pp</strong><br>
+     🇹🇭 Thailand (Disp=${TH.disp}%) → <span style="color:${risColor(thRis)};font-weight:600">${thRis.toFixed(2)}% [${risStatus(thRis)}]</span><br>
+     ${c.flag} ${c.name} (Disp=${c.disp}%) → <span style="color:${col};font-weight:600">${ris.toFixed(2)}% [${risStatus(ris)}]</span><br>
+     <span style="color:#888;font-size:13px">นี่คือ System Design Gap — ไม่ใช่ Technology Gap</span>`;
+  document.getElementById('c-contrast').style.display = 'flex';
+  document.getElementById('c-contrast').style.flexDirection = 'column';
+  document.getElementById('c-contrast').style.gap = '.5rem';
+}
+
+// override selectCountry to respect same-SW mode
+const _origSelectCountry = selectCountry;
+function selectCountry(id){
+  document.querySelectorAll('[id^="cbtn-"]').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('cbtn-'+id);
+  if(btn) btn.classList.add('active');
+  selectedCountry = COUNTRIES.find(c => c.id === id);
+  if(sameSWActive){
+    selectCountrySW(id, sameSWValue);
+  } else {
+    const c = selectedCountry;
+    const ris = calcRIS(c.sw, c.disp);
+    const thRis = calcRIS(TH.sw, TH.disp);
+    const col = risColor(ris);
+    document.getElementById('c-sel-flag').textContent = c.flag;
+    document.getElementById('c-sel-name').textContent = c.name;
+    document.getElementById('c-sel-sub').textContent = `${c.year} · SW=${c.sw}% · Disp=${c.disp}%`;
+    document.getElementById('c-sel-ris').textContent = ris.toFixed(2)+'%';
+    document.getElementById('c-sel-ris').style.color = col;
+    document.getElementById('c-sel-bars').innerHTML = countryBars(c.sw, c.disp);
+    document.getElementById('c-sel-badge').innerHTML = `
+      <span style="background:${ris<25?'#dcfce7':ris<40?'#fef3c7':'#fee2e2'};color:${col};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:.06em">${risStatus(ris)}</span>
+      <span style="font-size:11px;color:var(--ink3);margin-left:.5rem">SW=${c.sw}% · Disp=${c.disp}%</span>`;
+    document.getElementById('c-sel-note').textContent = c.story;
+    const diff = Math.abs(ris - thRis).toFixed(2);
+    const swDiff = Math.abs(c.sw - TH.sw);
+    let txt = '';
+    if(swDiff <= 15){
+      txt = `<strong style="color:#fbbf24">${c.flag} ${c.name}</strong> มี SW ใกล้เคียงกับไทย (${c.sw}% vs ${TH.sw}%) แต่ RIS ต่างกัน <strong style="color:#fbbf24">${diff} pp</strong> — เพราะ Dispatchable ต่างกัน (${c.disp}% vs ${TH.disp}%) นี่คือหัวใจของ System Design Gap`;
+    } else if(ris < thRis){
+      txt = `<strong style="color:#fbbf24">${c.flag} ${c.name}</strong> มี RIS ต่ำกว่าไทย ${diff} pp แม้ SW จะ${c.sw > TH.sw ? 'สูงกว่า' : 'ต่ำกว่า'} — เพราะ Dispatchable ${c.disp}% ${c.disp > TH.disp ? 'สูงกว่า' : 'ต่ำกว่า'}ไทย ยืนยัน System Architecture สำคัญกว่า Renewable level`;
+    } else {
+      txt = `<strong style="color:#fbbf24">${c.flag} ${c.name}</strong> มี RIS สูงกว่าไทย ${diff} pp — เป็นตัวอย่างระบบที่ SW เติบโตเร็วกว่า infrastructure ตาม คล้ายทิศทาง Solar Rush ของไทย`;
+    }
+    document.getElementById('c-contrast-text').innerHTML = txt;
+    document.getElementById('c-contrast').style.display = 'flex';
+    document.getElementById('c-contrast').style.flexDirection = 'column';
+    document.getElementById('c-contrast').style.gap = '.5rem';
+  }
+}
+
+// ── TARGET MODE ──
+function calcTarget(){
+  const baseSW = 35;
+  // solve: RIS = 24.99 (just under 25 = stable threshold)
+  // 18.52 + 0.814*sw - 0.167*d - 0.007*sw*d = 24.99
+  // d*(0.167 + 0.007*sw) = 18.52 + 0.814*sw - 24.99
+  const target = 24.99;
+  const numerator = B0 + B_SW*baseSW - target;
+  const denominator = Math.abs(B_DISP) + Math.abs(B_INT)*baseSW;
+  const needed = numerator / denominator;
+  const currentDisp = 30;
+  const addNeeded = Math.max(0, needed - currentDisp);
+  const el = document.getElementById('target-num');
+  const lb = document.getElementById('target-label');
+  const ans = document.getElementById('target-answer');
+  if(addNeeded <= 0){
+    el.textContent = 'Already STABLE';
+    el.style.color = '#15803d';
+    lb.textContent = 'ระบบปัจจุบันเสถียรแล้ว';
+  } else {
+    el.textContent = '+'+Math.ceil(addNeeded)+'%';
+    el.style.color = '#1e40af';
+    lb.textContent = `ต้องเพิ่ม Dispatchable จาก ${currentDisp}% → ${Math.ceil(needed)}% จึงจะ STABLE`;
+    ans.style.background = '#eff6ff';
+    ans.style.borderLeft = '3px solid #3b82f6';
+  }
+  // auto-set slider to show the effect
+  const slVal = Math.min(60, Math.ceil(addNeeded));
+  document.getElementById('policy-sl').value = slVal;
+  onPolicy();
+}
+</script>
+</body>
+</html>
